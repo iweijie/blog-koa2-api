@@ -44,19 +44,8 @@ var getClientIp = function(req) {
   }
   return ip;
 };
-
-// 获取随机数
-// function random(length=5){
-//   if(length > 10) return 0
-//   var l = 15 -length;
-//   var r = Math.random();
-//   var start = Math.floor(r*l) + 2;
-//   var str = r.toString().slice(start,length+start)
-//   return str
-// }
 module.exports = {
     formatTime,
     trim,
     getClientIp,
-    // random
 }

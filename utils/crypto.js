@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const {salt} = require('../config/index');
-var uid = require('uid-safe').sync
+// var uid = require('uuid')
 // 加密
 function aesEncrypt(data, key = salt) {
     if(typeof data == "object"){
@@ -26,6 +26,5 @@ function aesDecrypt(encrypted, key = salt) {
 
 module.exports = {
     aesEncrypt,
-    aesDecrypt,
-    uid
+    aesDecrypt
 }

@@ -25,12 +25,12 @@ var formatTime = function (timestamp, flag, separator) {
   return y + separator + m + separator + d + ' ' + h + ':' + min
 }
 
-// 去除前后空格
-var trim = function(str){
-    var trim = String.prototype.trim
-    if(trim) return str.trim()
-    return str.replace(/^\s*|\s*$/g,'')
-}
+// // 去除前后空格
+// var trim = function(str){
+//     var trim = String.prototype.trim
+//     if(trim) return str.trim()
+//     return str.replace(/^\s*|\s*$/g,'')
+// }
 // 获取IP 地址
 var getClientIp = function(req) {
   if(!req) return ""
@@ -46,6 +46,6 @@ var getClientIp = function(req) {
 };
 module.exports = {
     formatTime,
-    trim,
+    // trim,
     getClientIp,
 }

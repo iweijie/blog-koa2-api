@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const {salt} = require('../config/index');
-// var uid = require('uuid')
 // 加密
 function aesEncrypt(data, key = salt) {
     if(typeof data == "object"){

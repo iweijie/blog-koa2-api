@@ -1,18 +1,8 @@
 'use strict';
 
-module.exports = () => {
-  // 验证用户是否登录
-  return async function(ctx, next) {
-    ctx.locals.current_user = null;
-    const { user } = ctx;
+const sessionModel = require("../models/session")
 
-    if (!user) {
-      return await next();
-    }
-
-    const count = await ctx.service.message.getMessagesCount(user._id);
-    user.messages_count = count;
-    ctx.locals.current_user = user;
-    await next();
-  };
+// 验证用户是否登录
+module.exports = async function (ctx, next) {
+	ctx.cookie.get("token")
 };

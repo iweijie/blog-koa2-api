@@ -9,7 +9,6 @@ var menuConfig =new Schema({
     isPublic:{type:Boolean}, // 是否公开
     level:{type:Number}, // 层级
     classify:{type:String}, // 分类
-    manner:{type:String}
 })
 
 module.exports = db.model('config-menu',menuConfig)

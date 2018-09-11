@@ -1,12 +1,11 @@
 const Koa = require('koa')
-const app = new Koa()
+const Router = require('koa-router');
 const bodyparser = require("koa-bodyparser")
 const cors = require('koa2-cors');
-
-
-
 const config = require("./config/index")
 require('./app/models/mongoose')
+
+const app = new Koa()
 
 app.use(cors({
 	origin: function (ctx) {

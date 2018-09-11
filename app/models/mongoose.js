@@ -3,7 +3,8 @@ var config = require("../../config/index");
 var Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
 var db = mongoose.createConnection(config.mongoose.url);
-db.Promise = global.Promise;
+
+// db.Promise = global.Promise;
 db.Schema = Schema;
 
 db.on('error', function callback(err) { //监听是否有异常

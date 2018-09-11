@@ -1,4 +1,3 @@
-
 var db = require('./mongoose.js')
 var Schema = db.Schema;
 var userSchema =new Schema({

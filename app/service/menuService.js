@@ -46,7 +46,7 @@ const menu = {
         // lean 将mongoose 对象转为普通对象
         return  menuModel.find({},"id url parent isPublic level title children classify").lean().exec()
                 .then(reuslt=>{
-                    result.forEach(v=>{
+                    reuslt.forEach(v=>{
                         v._id = v._id.toString()
                     })
                     return getMenuList(reuslt,islogin)
@@ -68,18 +68,19 @@ const menu = {
         let menuInstance = new menuModel({
             title,url,parent,isPublic,level,classify
         })
-        return menuInstance.save().exec()
+        return menuInstance.save()
     },
     /**
     * author：weijie
     * describe： 修改/设置菜单数据
+    * @param {String} _id ID
     * @param {String} title 标题
     * @param {String} url   路径
     * @param {String} isPublic   是否公开（非公开需要登入查看）
     * @param {String} classify   当前菜单所属类型
     * @return {Promise} 
     */
-    setMenu:( title,url,isPublic,classify )=>{
+    setMenu:( _id,title,url,isPublic,classify )=>{
         var setParams = {
             title,url,isPublic,classify
         }

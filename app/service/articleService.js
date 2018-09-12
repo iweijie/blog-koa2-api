@@ -9,33 +9,58 @@ const article = {
     * @param {Object} userInfo  用户信息，有值代表有登入
     * @return {Promise[ArticleList]} 承载 ArticleList 的 Promise 对象
     */
-    getArticleList : (id,page,pageSize,userInfo)=>{
-        if(userInfo){
-            return  articleModel.find(
-                        { "$or": [{ classify: id, ispublic: true }, { classify: id, autor: userInfo.userId }] },
-                        "title description classify createTime autor time", 
-                        { skip: (page - 1) * pageSize, limit: pageSize }
-                    )
-                    .populate({
-                        path: "autor",
-                        select: "name"
-                    })
-                    .sort({ "createTime": -1 })
-                    .exec()
+    getArticleList: (id, page, pageSize, userInfo) => {
+        if (userInfo && userInfo.isLogin) {
+            return articleModel.find(
+                { "$or": [{ classify: id, ispublic: true }, { classify: id, autor: userInfo.userId }] },
+                "title description classify createTime autor time",
+                { skip: (page - 1) * pageSize, limit: pageSize }
+            )
+                .populate({
+                    path: "autor",
+                    select: "name"
+                })
+                .sort({ "createTime": -1 })
+                .exec()
 
-        }else {
-            return  articleModel.find(
-                        { classify: id, ispublic: true },
-                        "title description classify createTime autor time", 
-                        { skip: (page - 1) * pageSize, limit: pageSize }
-                    )
-                    .populate({
-                        path: "autor",
-                        select: "name"
-                    })
-                    .sort({ "createTime": -1 })
-                    .exec()
+        } else {
+            return articleModel.find(
+                { classify: id, ispublic: true },
+                "title description classify createTime autor time",
+                { skip: (page - 1) * pageSize, limit: pageSize }
+            )
+                .populate({
+                    path: "autor",
+                    select: "name"
+                })
+                .sort({ "createTime": -1 })
+                .exec()
         }
+    },
+    /*
+    * 修改文章详情
+    */
+    setArticlDetail: (id, title, classify, description, ispublic, content) => {
+        var nowtime = Date.now()
+        return articleModel.findOneAndUpdate({_id:id}, { $set: { title, classify, description, ispublic, content,updateTime:nowtime } }).exec();
+    },
+    /*
+    * 新增文章详情
+    */
+    addArticlDetail: (title, classify, description, ispublic, content, autor) => {
+        var nowtime = Date.now()
+        var articleInstance = new articleModel({
+            title,
+            classify,
+            description,
+            time: 0,
+            ispublic,
+            content,
+            autor,
+            createTime: nowtime,
+            updateTime: nowtime,
+        })
+        return articleInstance.save()
     },
     /*
     * 依据文章ID获取文章详情
@@ -43,18 +68,18 @@ const article = {
     * @param {Object} userInfo  用户信息，有值代表有登入
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
-    getArticleDetail :async (_id,userInfo)=>{
+    getArticleDetail: async (_id, userInfo) => {
         let result = await articleModel.findOne(
-                        { _id: id },
-                        "title description classify time ispublic content createTime updateTime autor leave"
-                    )
-                    .populate({
-                        path: "autor",
-                        select: "name"
-                    })
-                    .exec()
+            { _id: id },
+            "title description classify time ispublic content createTime updateTime autor leave"
+        )
+            .populate({
+                path: "autor",
+                select: "name"
+            })
+            .exec()
         if (result && (result.ispublic || (userInfo && userInfo.userId === result.autor.id))) return result;
-        
+
         throw new Error("文章获取错误")
     }
 }

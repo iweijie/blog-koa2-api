@@ -3,6 +3,7 @@ const config = require("../../config/index")
 // error 处理函数
 module.exports = async function (ctx, next) {
     try {
+        console.log("test")
         await next();
     } catch (err) {
         err = err || new Error("Null or Undefined error");
@@ -20,7 +21,7 @@ module.exports = async function (ctx, next) {
 
         let response = err.response || {}
 
-        ctx.body = {
+        ctx.body = { 
             code:err.code,
             error:response.body || err.error ,
             message: err.message

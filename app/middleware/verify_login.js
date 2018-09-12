@@ -1,8 +1,22 @@
 'use strict';
 
 const sessionModel = require("../models/session")
-
-// 验证用户是否登录
+const {aesDecrypt} = require("../utils/crypto")
+// 获取用户信息
 module.exports = async function (ctx, next) {
-	ctx.cookie.get("token")
+	var token = ctx.cookies.get("token");
+	ctx.__wj = {
+		userInfo:{}
+	}
+	if(token){
+		var id = aesDecrypt(token);
+		var result = await sessionModel.getSession(id);
+		if(result){
+			ctx.__wj.userInfo = {
+				...result,
+				isLogin:true
+			}
+		}
+	}
+	await next()
 };

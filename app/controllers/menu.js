@@ -2,7 +2,7 @@ const menuService = require('../service/menuService');
 
 module.exports = (router)=>{
 
-    router.post('/api/config/menu',async function(ctx, next) {
+    router.post('/config/menu',async function(ctx, next) {
         let {title,url,type,isPublic,_id,classify} = ctx.request.body;
         let level = 1 ;
         let resp = null
@@ -11,7 +11,7 @@ module.exports = (router)=>{
             resp = {state:1,msg:"添加成功"}
         }
         if(type == "amend") {
-            let result = await menuService.setMenu(title,url,isPublic,classify,manner);
+            let result = await menuService.setMenu(_id,title,url,isPublic,classify);
             if(!result){
                 resp =  {state:0,msg:"当前配置不存在"}
             }else {
@@ -25,6 +25,8 @@ module.exports = (router)=>{
                 if(result){
                     level += result.level;
                     await save()
+                }else {
+                    resp = {state:0,msg:"添加失败，父级菜单ID不存在"}
                 }
             }
         }else if(type == "remove"){
@@ -38,13 +40,14 @@ module.exports = (router)=>{
         } else {
             resp = {state:0,msg:"修改失败"}
         }
-        cxt.body = resp
+        ctx.body = resp
     });
 
-    router.get('/api/menu/list',async function(ctx, next) {
-        let {isLogin} = ctx.__wj.userInfo
+    router.get('/menu/list',async function(ctx, next) {
+        let {userInfo} = ctx.__wj;
+        let isLogin = userInfo && userInfo.isLogin || false
         let list =await menuService.getMenu(isLogin)
-        cxt.body = {state:1,result:list}
+        ctx.body = {state:1,result:list}
     });
 
 }

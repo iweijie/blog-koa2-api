@@ -6,13 +6,13 @@ const article = {
     * @param {String} id        文章类型
     * @param {String} page      页数
     * @param {String} pageSize  每页记录条数
-    * @param {Object} userInfo  用户信息，有值代表有登入
+    * @param {Object} userId    用户id，有值代表有登入
     * @return {Promise[ArticleList]} 承载 ArticleList 的 Promise 对象
     */
-    getArticleList: (id, page, pageSize, userInfo) => {
-        if (userInfo && userInfo.isLogin) {
+    getArticleList: (id, page, pageSize, userId) => {
+        if (userId) {
             return articleModel.find(
-                { "$or": [{ classify: id, ispublic: true }, { classify: id, autor: userInfo.userId }] },
+                { "$or": [{ classify: id, ispublic: true }, { classify: id, autor: userId }] },
                 "title description classify createTime autor time",
                 { skip: (page - 1) * pageSize, limit: pageSize }
             )
@@ -42,7 +42,7 @@ const article = {
     */
     setArticlDetail: (id, title, classify, description, ispublic, content) => {
         var nowtime = Date.now()
-        return articleModel.findOneAndUpdate({_id:id}, { $set: { title, classify, description, ispublic, content,updateTime:nowtime } }).exec();
+        return articleModel.findOneAndUpdate({ _id: id }, { $set: { title, classify, description, ispublic, content, updateTime: nowtime } }).exec();
     },
     /*
     * 新增文章详情
@@ -65,12 +65,12 @@ const article = {
     /*
     * 依据文章ID获取文章详情
     * @param {String} _id       文章ID
-    * @param {Object} userInfo  用户信息，有值代表有登入
+    * @param {Object} userId    用户ID，有值代表有登入
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
-    getArticleDetail: async (_id, userInfo) => {
-        let result = await articleModel.findOne(
-            { _id: id },
+    getArticleDetail: async (_id, userId) => {
+        let result = await articleModel.findById(
+            _id,
             "title description classify time ispublic content createTime updateTime autor leave"
         )
             .populate({
@@ -78,9 +78,16 @@ const article = {
                 select: "name"
             })
             .exec()
-        if (result && (result.ispublic || (userInfo && userInfo.userId === result.autor.id))) return result;
+        if (result && (result.ispublic || (userId === result.autor.id))) return result;
+    },
 
-        throw new Error("文章获取错误")
+    /*
+    * 新增文章评论
+    * @param {String} _id       文章ID
+    * @param {Object} params    添加评论参数
+    */
+    addLevel: async (_id, params) => {
+        return articleModel.findByIdAndUpdate(_id, { $push: { leave: params } }, { new: true })
     }
 }
 

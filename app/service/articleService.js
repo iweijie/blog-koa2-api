@@ -1,4 +1,5 @@
 const articleModel = require("../models/article")
+const leaveService = require("./leaveService")
 
 const article = {
     /*
@@ -69,26 +70,32 @@ const article = {
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
     getArticleDetail: async (_id, userId) => {
-        let result = await articleModel.findById(
+        let article = articleModel.findById(
             _id,
-            "title description classify time ispublic content createTime updateTime autor leave"
+            "title description classify time ispublic content createTime updateTime autor"
         )
             .populate({
                 path: "autor",
                 select: "name"
             })
+            .lean()
             .exec()
+        let leave = leaveService.getLeave(_id)
+
+        let result = await Promise.all([article,leave])
+                        .then(result=>{
+                            if(!result[0]) {
+                                var err =  new Error(200,"当前文章不存在")
+                                err.__state = 0 ;
+                                throw err
+                            };
+                            let articleDetail = result[0]
+                            articleDetail.leave = result[1]
+                            return articleDetail
+                        })
+
         if (result && (result.ispublic || (userId === result.autor.id))) return result;
     },
-
-    /*
-    * 新增文章评论
-    * @param {String} _id       文章ID
-    * @param {Object} params    添加评论参数
-    */
-    addLevel: async (_id, params) => {
-        return articleModel.findByIdAndUpdate(_id, { $push: { leave: params } }, { new: true })
-    }
 }
 
 

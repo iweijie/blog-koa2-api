@@ -44,7 +44,9 @@ const menu = {
     */
     getMenu:( islogin = false )=>{
         // lean 将mongoose 对象转为普通对象
-        return  menuModel.find({},"id url parent isPublic level title children classify").lean().exec()
+        return  menuModel.find({},"id url parent isPublic level title children classify")
+                .lean()
+                .exec()
                 .then(reuslt=>{
                     reuslt.forEach(v=>{
                         v._id = v._id.toString()

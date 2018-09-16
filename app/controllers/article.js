@@ -1,5 +1,6 @@
 const articleService = require('../service/articleService');
-const userService = require('../service/userService');
+// const userService = require('../service/userService');
+const leaveService = require('../service/leaveService');
 
 module.exports = (router) => {
 
@@ -47,32 +48,26 @@ module.exports = (router) => {
     router.post('/article/leave/add',async function (ctx, next) {
         var { userId, name, leave, articleId, replyName, replyUserId } = ctx.request.body;
         if (!articleId) return ctx.body = { msg: "当前文章不存在", state: 0 } ;
-        var params = { content: leave, createTime: Date.now() }
-        if (userId) {
-            let result =await userService.getUserInfoById(userId);
-            if(result){
-                params.name = result.name
-                params.userId = userId
-            }else {
-                params.name = name
-                params.userId = ""
-            }
-        } else {
-            params.name = name
-            params.userId = ""
-        }
-        if (replyName) {
-            params.replyName = replyName
-        }
-        if (replyUserId) {
-            params.replyUserId = replyUserId
-        }
+        if (!name) return ctx.body = { msg: "评论人名称不能为空", state: 0 } ;
 
-        let result =await articleService.addLevel(articleId,params);
+        let result =await leaveService.addLevel(articleId,name, leave,userId,replyName,replyUserId);
+
         if (result) {
             return ctx.body = { msg: "成功", state: 1, result: result.leave }
         }
         return ctx.body = { msg: "保存失败", state: 0 }
+    })
+    // 删除评论
+    router.post('/article/leave/del',async function (ctx, next) {
+
+        var { id } = ctx.request.body;
+        if(id) return ctx.body = { msg: "ID 不能为空", state: 0 }
+        let result =await leaveService.delLevel(id);
+        
+        if (result) {
+            return ctx.body = { msg: "删除成功", state: 1, result: result.leave }
+        }
+        return ctx.body = { msg: "删除失败", state: 0 }
     })
 
 }

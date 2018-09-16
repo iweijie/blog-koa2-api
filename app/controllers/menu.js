@@ -36,7 +36,7 @@ module.exports = (router) => {
             if (!_id) {
                 resp = { state: 0, msg: "ID 为必传字段" }
             }
-            let result = await menuService.removeMenu()
+            let result = await menuService.removeMenu(_id)
             if (result) {
                 resp = { state: 1, msg: "删除成功" }
             }

@@ -1,5 +1,6 @@
 const articleModel = require("../models/article")
-const leaveService = require("./leaveService")
+const reviewService = require("./reviewService")
+const {myError} =  require("../utils/basics")
 
 const article = {
     /*
@@ -42,6 +43,9 @@ const article = {
     * 修改文章详情
     */
     setArticlDetail: (id, title, classify, description, ispublic, content) => {
+        if(!id|| !title|| !classify|| !description|| ispublic === undefined|| !content) {
+            myError("修改文章错误")
+        }
         var nowtime = Date.now()
         return articleModel.findOneAndUpdate({ _id: id }, { $set: { title, classify, description, ispublic, content, updateTime: nowtime } }).exec();
     },
@@ -49,6 +53,9 @@ const article = {
     * 新增文章详情
     */
     addArticlDetail: (title, classify, description, ispublic, content, autor) => {
+        if(!title|| !classify|| !description|| !ispublic|| !content|| !autor) {
+            myError("新增文章错误")
+        }
         var nowtime = Date.now()
         var articleInstance = new articleModel({
             title,
@@ -70,31 +77,33 @@ const article = {
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
     getArticleDetail: async (_id, userId) => {
+        if(!_id) {
+            myError("ID 为必传字段")
+        }
         let article = articleModel.findById(
-            _id,
-            "title description classify time ispublic content createTime updateTime autor"
-        )
+                _id,
+                "title description classify time ispublic content createTime updateTime autor"
+            )
             .populate({
                 path: "autor",
                 select: "name"
             })
             .lean()
             .exec()
-        let leave = leaveService.getLeave(_id)
+        let review = reviewService.getReview(_id)
 
-        let result = await Promise.all([article,leave])
+        let result = await Promise.all([article,review])
                         .then(result=>{
                             if(!result[0]) {
-                                var err =  new Error(200,"当前文章不存在")
-                                err.__state = 0 ;
-                                throw err
-                            };
+                                myError("文章不存在",2)
+                            }
                             let articleDetail = result[0]
-                            articleDetail.leave = result[1]
+                            articleDetail.review = result[1] || []
                             return articleDetail
                         })
 
-        if (result && (result.ispublic || (userId === result.autor.id))) return result;
+        if (result && (result.ispublic || (userId && userId === result.autor._id.toString()))) return result;
+            myError("文章不存在",2)
     },
 }
 

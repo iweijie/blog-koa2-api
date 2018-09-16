@@ -1,4 +1,5 @@
 const menuModel = require("../models/menu")
+const {myError} =  require("../utils/basics")
 
 /**
 * author：weijie
@@ -83,6 +84,9 @@ const menu = {
     * @return {Promise} 
     */
     setMenu:( _id,title,url,isPublic,classify )=>{
+        if(!_id || !url) {
+            myError("修改失败")
+        }
         var setParams = {
             title,url,isPublic,classify
         }
@@ -95,6 +99,9 @@ const menu = {
     * @return {Promise} 
     */
     findMenu:( _id )=>{
+        if(!_id) {
+            myError("获取菜单信息失败")
+        }
         return menuModel.findById(_id).exec()
     },
     /**
@@ -104,6 +111,9 @@ const menu = {
     * @return {Promise} 
     */
     removeMenu:( _id )=>{
+        if(!_id) {
+            myError("ID为必传字段")
+        }
         let uid = 0
         var removeChildrens = (resolve,reject,_id)=>{
             uid ++ 

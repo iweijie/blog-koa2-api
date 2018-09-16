@@ -1,4 +1,5 @@
 const sessionModel = require("../models/session")
+const config = require("../../config/index")
 
 const session = {
     /*
@@ -7,7 +8,7 @@ const session = {
     * @return {Promise[session]} 承载 session 的 Promise 对象
     */
     getSession:(token)=>{
-        return sessionModel.findOne({"_token":token}).exec()
+        return sessionModel.findOne({"_id":token}).exec()
     },
     
     /*
@@ -23,7 +24,7 @@ const session = {
             userId,
             expires,
             info,
-            _token:uid
+            _id:uid
         })
         return sessionInfo.save()
     },
@@ -34,7 +35,7 @@ const session = {
     * @return {Promise[session]} 承载 session 的 Promise 对象
     */
     refresh:(token)=>{
-        return sessionModel.findOneAndUpdate({"_token":token},{expires: Date.now() + 3*24*60*60*1000}).exec()
+        return sessionModel.findOneAndUpdate({"_id":token},{expires: Date.now() + config.expires}).exec()
     }
 }
 

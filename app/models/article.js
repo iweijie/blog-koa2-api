@@ -29,6 +29,6 @@ var articleSchema =new Schema({
     updateTime:{type:Number}, // 更新时间
     autor :{type: Schema.Types.ObjectId, ref: 'user' },//作者
     // 评论
-    // leave :[leaveSchema]
+    // review :[reviewSchema]
 })
 module.exports = db.model('article',articleSchema);

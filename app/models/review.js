@@ -1,7 +1,7 @@
 var db = require("./mongoose")
 var Schema = db.Schema
 
-var leaveSchema =new Schema({
+var reviewSchema =new Schema({
     // 关联文章ID
     articleId:{
         type: Schema.Types.ObjectId, 
@@ -38,4 +38,4 @@ var leaveSchema =new Schema({
 
 })
 
-module.exports = db.model('leave',leaveSchema);
+module.exports = db.model('review',reviewSchema);

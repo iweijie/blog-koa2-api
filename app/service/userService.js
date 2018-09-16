@@ -11,8 +11,10 @@ const user = {
     userLogin: (username, password) => {
         return userModel.findOneAndUpdate(
                 { username, password },
-                { $set: { LastLoginTime: Date.now() } }
+                { $set: { LastLoginTime: Date.now() } },
+                {fields:"username name _id"}
             )
+            .lean()
             .exec()
     },
     /**
@@ -22,7 +24,7 @@ const user = {
     * @return {Promise} 返回包含用户信息的Promise
     */
     getUserInfoById: (id) => {
-        return userModel.findById(id).exec()
+        return userModel.findById(id,"username name _id").lean().exec()
     }
 }
 

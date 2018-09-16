@@ -1,3 +1,5 @@
+
+const os = require('os');
 // 时间格式化
 var formatTime = function (timestamp, flag, separator) {
   var date = new Date(timestamp)
@@ -37,7 +39,31 @@ var getClientIp = function(req) {
   }
   return ip;
 };
+
+let getSessionInfo = function(){
+  let arch = os.arch()
+  let hostname = os.hostname();
+  return JSON.stringify({arch,hostname})
+}
+
+let errmark = (()=>{
+  let mark = "__wj_error"
+  if(Symbol) return Symbol(mark)
+  return mark ;
+})();
+
+// 自定义错误 
+
+let myError =(message,state)=>{
+  var err = new Error(message)
+  err.__marsk = errmark;
+  err.state = state || 0
+  throw err
+}
 module.exports = {
     formatTime,
     getClientIp,
+    errmark,
+    myError,
+    getSessionInfo
 }

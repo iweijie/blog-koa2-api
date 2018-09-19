@@ -2,7 +2,8 @@ var mongoose = require("mongoose");
 var config = require("../../config/index");
 var Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
-var db = mongoose.createConnection(config.mongoose.url);
+var db = mongoose.createConnection(config.mongoose.url,{ useNewUrlParser: true });
+
 
 // db.Promise = global.Promise;
 db.Schema = Schema;

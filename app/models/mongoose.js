@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var config = require("../../config/index");
 var Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
-var db = mongoose.createConnection(config.mongoose.url,{ useNewUrlParser: true });
+var db = mongoose.createConnection(config.mongoose.url, { useNewUrlParser: true });
 
 
 // db.Promise = global.Promise;
@@ -17,4 +17,4 @@ db.once('open', function callback() { //监听一次打开
     console.log('success connected!');
 });
 
-module.exports =db
+module.exports = db

@@ -4,16 +4,20 @@ const reviewService = require('../service/reviewService');
 
 module.exports = (router) => {
 
-    router.post('/article/list', async function (ctx, next) {
-        let { id, page, pageSize } = ctx.request.body;
-
+    router.get('/article/list', async function (ctx, next) {
+        let { id, page, pageSize } =  ctx.query;
+        page = Number(page) || 1
+        pageSize = Number(pageSize) || 10
         let { userId } = ctx.__wj.userInfo;
 
         if (!id) return ctx.body = { state: 0, msg: "请传入正确的参数" }
+        
+        let result = await Promise.all([
+            articleService.getArticleList(id, page, pageSize, userId),
+            articleService.getArticleListCount(id)
+        ]);
 
-        let result = await articleService.getArticleList(id, page, pageSize, userId);
-
-        ctx.body = { state: 1, result: result }
+        ctx.body = { state: 1, result: result[0],totle:result[1] }
     })
     router.post('/article/add', async function (ctx, next) {
         let { userInfo } = ctx.__wj;

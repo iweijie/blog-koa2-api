@@ -105,6 +105,14 @@ const article = {
         if (result && (result.ispublic || (userId && userId === result.autor._id.toString()))) return result;
             myError("文章不存在",2)
     },
+    /*
+    * 依据条件获取文章总数量
+    * @param {Object} type   文章类型
+    * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
+    */
+    getArticleListCount:(type)=>{
+        return articleModel.find({classify:type}).count()
+    }
 }
 
 

@@ -42,23 +42,24 @@ const article = {
     /*
     * 修改文章详情
     */
-    setArticlDetail: (id, title, classify, description, ispublic, content) => {
-        if(!id|| !title|| !classify|| !description|| ispublic === undefined|| !content) {
+    setArticlDetail: (id,tags, title, classify, description, ispublic, content) => {
+        if(!id||!tags || !title|| !classify|| !description|| ispublic === undefined|| !content) {
             myError("修改文章错误")
         }
         var nowtime = Date.now()
-        return articleModel.findOneAndUpdate({ _id: id }, { $set: { title, classify, description, ispublic, content, updateTime: nowtime } }).exec();
+        return articleModel.findOneAndUpdate({ _id: id }, { $set: { title,tags, classify, description, ispublic, content, updateTime: nowtime } }).exec();
     },
     /*
     * 新增文章详情
     */
-    addArticlDetail: (title, classify, description, ispublic, content, autor) => {
-        if(!title|| !classify|| !description|| !ispublic|| !content|| !autor) {
+    addArticlDetail: (title,tags, classify, description, ispublic, content, autor) => {
+        if(!title|| !classify|| !tags || !description|| !ispublic|| !content|| !autor) {
             myError("新增文章错误")
         }
         var nowtime = Date.now()
         var articleInstance = new articleModel({
             title,
+            tags,
             classify,
             description,
             time: 0,
@@ -76,13 +77,13 @@ const article = {
     * @param {Object} userId    用户ID，有值代表有登入
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
-    getArticleDetail: async (_id, userId) => {
+    getArticleDetail: async (_id, userId, field = "title tags description classify time ispublic content createTime updateTime autor") => {
         if(!_id) {
             myError("ID 为必传字段")
         }
         let article = articleModel.findById(
                 _id,
-                "title description classify time ispublic content createTime updateTime autor"
+                field
             )
             .populate({
                 path: "autor",
@@ -111,7 +112,8 @@ const article = {
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
     getArticleListCount:(type)=>{
-        return articleModel.find({classify:type}).count()
+        if(type) return articleModel.countDocuments()
+        return articleModel.countDocuments({classify:type})
     }
 }
 

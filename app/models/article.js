@@ -13,6 +13,8 @@ var articleSchema =new Schema({
         type:String,
         required:true
     },
+    // 标签
+    tags:[String],
     time:{ // 查看次数
         type:Number,
         default:0

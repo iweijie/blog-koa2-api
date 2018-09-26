@@ -17,7 +17,7 @@ module.exports = (router) => {
             articleService.getArticleListCount(id)
         ]);
 
-        ctx.body = { state: 1, result: result[0],totle:result[1] }
+        ctx.body = { state: 1, result: result[0],total:result[1] }
     })
     router.post('/article/add', async function (ctx, next) {
         let { userInfo } = ctx.__wj;

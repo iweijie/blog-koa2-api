@@ -22,10 +22,7 @@ var tagsSchema = new Schema({
         default: 0
     },
     // 关联文章ID
-    articleIdList: [{
-        type: Schema.Types.ObjectId,
-        ref: 'article'
-    }],
+    articleIdList: [String],
     // 当前标签是否公开
     // 0：全部人可见；1：登入可见；2：仅自己可见
     ispublic: {

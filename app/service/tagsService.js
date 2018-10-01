@@ -1,4 +1,5 @@
 const tagsModel = require("../models/tags")
+const articleModel = require("../models/article")
 const config = require("../../config/index")
 
 const tags = {
@@ -7,7 +8,7 @@ const tags = {
     * @param {String} token      
     * @return {Promise[session]} 承载 session 的 Promise 对象
     */
-    addTag: ({ tagName,tagCode, description, ispublic }) => {
+    addTag: ({ tagName, tagCode, description, ispublic }) => {
         let instance = new tagsModel({
             tagName,
             tagCode,
@@ -18,23 +19,42 @@ const tags = {
     },
 
     /*
-    * 新增文章ID
+    * 修改文章数量
     * @param {String} tagCode       标签编码
-    * @param {String} articleId     文章ID 
+    * @param {Number} num       1 增加 ； -1 减少
     * @return {Promise} Promise     
     */
-    addArticleId: (tagCode, articleId) => {
-        return tagsModel.findOneAndUpdate({ tagCode }, { $push: { articleIdList: articleId }, $inc: { sum: 1 } })
+    changeArticleCount: async (tagCode,num = 1) => {
+        return tagsModel.updateOne({ tagCode }, { $inc: { sum: num } })
+    },
+
+    /*
+    * 获取标签信息
+    * @param {String} tagCode       标签编码
+    * @return {Promise} Promise     
+    */
+    getTagsInfo: (tagCode) => {
+        return tagsModel.findOne({ tagCode })
     },
     /*
-    * 移除文章ID
-    * @param {String} tagCode       标签编码
-    * @param {String} articleId     文章ID 
+    * 获取标签信息列表
     * @return {Promise} Promise     
     */
-    removeArticleId: (tagCode, articleId) => {
-        return tagsModel.findOneAndUpdate({ tagCode }, { $pull: { articleIdList: articleId }, $inc: { sum: -1 } })
-    },
+    getTagsInfoList: (userId) => {
+        let query;
+        if (userId) {
+            query = {
+                "$or": [
+                    { ispublic: 0 },
+                    { ispublic: 1 },
+                    { creator: userId }
+                ]
+            }
+        } else {
+            query = { ispublic: 0 }
+        }
+        return tagsModel.find(query)
+    }
 }
 
 module.exports = tags

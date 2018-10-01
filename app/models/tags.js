@@ -21,13 +21,16 @@ var tagsSchema = new Schema({
         type: Number,
         default: 0
     },
-    // 关联文章ID
-    articleIdList: [String],
     // 当前标签是否公开
     // 0：全部人可见；1：登入可见；2：仅自己可见
     ispublic: {
         type: Number,
         required: true
+    },
+    // 创建人
+    creator:{
+        type: Schema.Types.ObjectId,
+        ref: 'user' 
     },
      // 创建时间
     createTime: {

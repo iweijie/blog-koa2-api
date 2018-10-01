@@ -1,50 +1,54 @@
 const articleService = require('../service/articleService');
 const tagsService = require('../service/tagsService');
 const reviewService = require('../service/reviewService');
-const {diff} = require("../utils/basics")
+const { diff } = require("../utils/basics")
 
 module.exports = (router) => {
-
+    // router.get('/article/update', async function (ctx, next) {
+    //     await articleService.updateArticleList()
+    //     ctx.body = { state: 1, msg:"更新成功" }
+    // })
     router.get('/article/list', async function (ctx, next) {
-        let { id, page, pageSize } = ctx.query;
+        let { tag, page, pageSize } = ctx.query;
         page = Number(page) || 1
         pageSize = Number(pageSize) || 10
         let { userId } = ctx.__wj.userInfo;
+        if (tag) {
+            let tagInfo = await tagsService.getTagsInfo(tag);
+            let ispublic = tagInfo.ispublic;
 
-        if (!id) return ctx.body = { state: 0, msg: "请传入正确的参数" }
-
-        let result = await Promise.all([
-            articleService.getArticleList(id, page, pageSize, userId),
-            articleService.getArticleListCount(id)
-        ]);
+            if ((ispublic === 1 && !userId) || (ispublic === 2 && tagInfo.creator.toString() !== userId)) {
+                return ctx.body = { state: 0, msg: "你在做什么？？" }
+            }
+        }
+        let result = await articleService.getArticleList({ tag, page, pageSize, userId })
 
         ctx.body = { state: 1, result: result[0], total: result[1] }
     })
     router.post('/article/add', async function (ctx, next) {
         let { userInfo } = ctx.__wj;
         let { userId } = userInfo || {}
-        let { title, classify, description, tags,ispublic, content, autor, id } = ctx.request.body;
+        let { title, classify, description, tags, ispublic, content, autor, id } = ctx.request.body;
         if (!userId) return ctx.body = { state: 0, msg: "为嘛要玩我!!" }
         if (id) {
             if (autor !== userId) return ctx.body = { state: 0, msg: "求求你住手!!" };
-            let oldTags = await articleService.getArticleDetail(id,userId,"tags")
-            await articleService.setArticlDetail(id,tags, title, classify, description, ispublic, content);
-            let {add,remove} = diff(tags,oldTags);
-            await Promise.all([
-                ...add.map(v=>{
-                    return tagsService.addArticleId(v,id)
-                }),
-                ...remove.map(v=>{
-                    return tagsService.removeArticleId(v,id)
-                })
-            ])
+            // let oldTags = await articleService.getArticleDetail(id, userId, "tags")
+            await articleService.setArticlDetail({ id, tags, title, classify, description, ispublic, content });
+            // let { add, remove } = diff(tags, oldTags.tags);
+            // await Promise.all([
+            //     ...add.map(v => {
+            //         return tagsService.changeArticleCount(v)
+            //     }),
+            //     ...remove.map(v => {
+            //         return tagsService.changeArticleCount(v, -1)
+            //     })
+            // ])
             return ctx.body = { state: 1, msg: "修改成功" }
         }
-        let result = await articleService.addArticlDetail({title, classify,tags, description, ispublic, content, autor});
-        let _id = result._id.toString();
-        await Promise.all(tags.map(v=>{
-            return tagsService.addArticleId(v,_id)
-        }))
+        await articleService.addArticlDetail({ title, classify, tags, description, ispublic, content, autor });
+        // await Promise.all(tags.map(v => {
+        //     return tagsService.changeArticleCount(v)
+        // }))
         ctx.body = { state: 1, msg: "新增文章成功" };
     })
     // 获取文章详情
@@ -77,7 +81,6 @@ module.exports = (router) => {
     })
     // 删除评论
     router.post('/article/review/del', async function (ctx, next) {
-
         var { id } = ctx.request.body;
         if (id) return ctx.body = { msg: "ID 不能为空", state: 0 }
         let result = await reviewService.delReview(id);
@@ -87,13 +90,4 @@ module.exports = (router) => {
         }
         return ctx.body = { msg: "删除失败", state: 0 }
     })
-    // 添加标签
-    router.post('/article/addtag', async function (ctx, next) {
-        var { tagName,tagCode,description,ispublic} = ctx.request.body;
-        if (!tagName || !tagCode || ispublic === undefined ) return ctx.body = { msg: "参数错误", state: 0 }
-        if(!description) description = "";
-        await tagsService.addTag({tagName,tagCode,description,ispublic});
-        ctx.body = { msg: "添加成功", state: 1 }
-    })
-    
 }

@@ -47,7 +47,7 @@ const tags = {
                 "$or": [
                     { ispublic: 0 },
                     { ispublic: 1 },
-                    { creator: userId }
+                    { creator: mongoose.Types.ObjectId(userId) }
                 ]
             }
         } else {

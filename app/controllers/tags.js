@@ -16,6 +16,6 @@ module.exports = (router) => {
     router.post('/tags/list', async function (ctx, next) {
         let { userId } = ctx.__wj.userInfo;
         let result = await articleService.getTagsArticleCount(userId)
-        ctx.body = { msg: "添加成功", state: 1 ,result}
+        ctx.body = { msg: "获取成功", state: 1 ,result}
     })
 }

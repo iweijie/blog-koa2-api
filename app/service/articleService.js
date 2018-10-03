@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const articleModel = require("../models/article")
 const reviewService = require("./reviewService")
 const tagsService = require("./tagsService")
@@ -22,11 +23,11 @@ const article = {
                     "$or": [
                         { tags: { "$in": [tag] }, ispublic: 0 },
                         { tags: { "$in": [tag] }, ispublic: 1 },
-                        { tags: { "$in": [tag] }, ispublic: 2, autor: userId }
+                        { tags: { "$in": [tag] }, ispublic: 2, autor: mongoose.Types.ObjectId(userId) }
                     ]
                 }
             } else {
-                query = { "$or": [{ ispublic: 0 }, { ispublic: 1 }, { autor: userId }] }
+                query = { "$or": [{ ispublic: 0 }, { ispublic: 1 }, { autor: mongoose.Types.ObjectId(userId) }] }
             }
         } else {
             if (tag) {
@@ -127,13 +128,14 @@ const article = {
     */
     getTagsArticleCount: async (userId) => {
         let tags = await tagsService.getTagsInfoList();
-        let tagKey = [], query;
+        let tagKey = [], query,selectTags =[];
         tags.forEach(v => {
             if (v.ispublic === 0 ||
                 (v.ispublic === 1 && userId) ||
                 (v.ispublic === 2 && userId === v.creator.toString())
             ) {
                 tagKey.push(v.tagCode)
+                selectTags.push(v)
             }
         })
         if (userId) {
@@ -141,13 +143,13 @@ const article = {
                 "$or": [
                     { tags: { "$in": tagKey }, ispublic: 0 },
                     { tags: { "$in": tagKey }, ispublic: 1 },
-                    { tags: { "$in": tagKey }, ispublic: 2, autor: userId }
+                    { tags: { "$in": tagKey }, ispublic: 2, autor: mongoose.Types.ObjectId(userId) }
                 ]
             }
         } else {
             query = { tags: { "$in": tagKey }, ispublic: 0 }
         }
-        return articleModel.aggregate([
+        let result = await articleModel.aggregate([
             {
                 $match: query
             },
@@ -161,8 +163,23 @@ const article = {
                 }
             }
         ])
+        let returnArr = [] ;
+        if(result && result.length && selectTags && selectTags.length){
+            for(let i=0;i<result.length;i++){
+                for(let l=0;l<tags.length;l++){
+                    if( result[i]._id === selectTags[l].tagCode){
+                        returnArr.push({
+                            tagCode:selectTags[l].tagCode,
+                            tagName:selectTags[l].tagName,
+                            count:result[i].count
+                        })
+                    }
+                }
+            }
+        }
+        return returnArr
+        
     },
-
     /*
     * 一次性更新脚本；用于格式化数据
     */

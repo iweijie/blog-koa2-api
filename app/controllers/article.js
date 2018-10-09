@@ -33,7 +33,7 @@ module.exports = (router) => {
         if (id) {
             if (autor !== userId) return ctx.body = { state: 0, msg: "求求你住手!!" };
             // let oldTags = await articleService.getArticleDetail(id, userId, "tags")
-            await articleService.setArticlDetail({ id, tags, title, classify, description, ispublic, content });
+            await articleService.setArticlDetail({ id, tags, title, description, ispublic, content });
             // let { add, remove } = diff(tags, oldTags.tags);
             // await Promise.all([
             //     ...add.map(v => {
@@ -45,7 +45,7 @@ module.exports = (router) => {
             // ])
             return ctx.body = { state: 1, msg: "修改成功" }
         }
-        await articleService.addArticlDetail({ title, classify, tags, description, ispublic, content, autor });
+        await articleService.addArticlDetail({ title, tags, description, ispublic, content, autor });
         // await Promise.all(tags.map(v => {
         //     return tagsService.changeArticleCount(v)
         // }))

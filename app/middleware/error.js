@@ -6,6 +6,8 @@ module.exports = async function (ctx, next) {
     try {
         await next();
     } catch (err) {
+        
+        console.log(err)
         err = err || new Error("Null or Undefined error");
         // !err.expose &&
             // logger.ctx(ctx).fatal(`error: ${err.message}, stack: ${err.stack}`)

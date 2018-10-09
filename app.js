@@ -47,9 +47,11 @@ app.use(async (ctx) => {
 app.listen(config.port)
 
 process.on('unhandledRejection', (err) => {
+	console.log(err)
 	// logger.fatal(`unhandledRejection: ${err.message}, stack: ${err.stack}`);
 });
 
 process.on('uncaughtException', (err) => {
+	console.log(err)
 	// logger.fatal(`uncaughtException: ${err.message}, stack: ${err.stack}`);
 });

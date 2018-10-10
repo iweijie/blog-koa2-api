@@ -28,27 +28,14 @@ module.exports = (router) => {
     router.post('/article/add', async function (ctx, next) {
         let { userInfo } = ctx.__wj;
         let { userId } = userInfo || {}
-        let { title, classify, description, tags, ispublic, content, autor, id } = ctx.request.body;
+        let { title, description, tags, ispublic, content, autor, id } = ctx.request.body;
         if (!userId) return ctx.body = { state: 0, msg: "为嘛要玩我!!" }
         if (id) {
             if (autor !== userId) return ctx.body = { state: 0, msg: "求求你住手!!" };
-            // let oldTags = await articleService.getArticleDetail(id, userId, "tags")
             await articleService.setArticlDetail({ id, tags, title, description, ispublic, content });
-            // let { add, remove } = diff(tags, oldTags.tags);
-            // await Promise.all([
-            //     ...add.map(v => {
-            //         return tagsService.changeArticleCount(v)
-            //     }),
-            //     ...remove.map(v => {
-            //         return tagsService.changeArticleCount(v, -1)
-            //     })
-            // ])
             return ctx.body = { state: 1, msg: "修改成功" }
         }
         await articleService.addArticlDetail({ title, tags, description, ispublic, content, autor });
-        // await Promise.all(tags.map(v => {
-        //     return tagsService.changeArticleCount(v)
-        // }))
         ctx.body = { state: 1, msg: "新增文章成功" };
     })
     // 获取文章详情
@@ -89,5 +76,11 @@ module.exports = (router) => {
             return ctx.body = { msg: "删除成功", state: 1, result: result.review }
         }
         return ctx.body = { msg: "删除失败", state: 0 }
+    })
+
+    // 推荐文章
+    router.post('/article/recommend', async function (ctx, next) {
+        let result = await articleService.getRecommendList();
+        return ctx.body = { msg: "获取成功",state: 1, result: result  }
     })
 }

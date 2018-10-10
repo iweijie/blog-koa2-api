@@ -180,6 +180,19 @@ const article = {
         return returnArr
         
     },
+    
+    /*
+    * 推荐文章列表
+    * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
+    */
+    getRecommendList : ()=>{
+        return articleModel.find(
+            { ispublic: 0 },
+            "title",
+            { skip: 0, limit: 10 }
+        )
+        .sort({ "time": -1 })
+    }
     /*
     * 一次性更新脚本；用于格式化数据
     */

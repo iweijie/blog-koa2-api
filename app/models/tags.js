@@ -35,7 +35,6 @@ var tagsSchema = new Schema({
      // 创建时间
     createTime: {
         type: Number,
-        default: Date.now()
     }
 })
 module.exports = db.model('tag', tagsSchema);

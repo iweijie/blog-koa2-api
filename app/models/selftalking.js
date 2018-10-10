@@ -15,7 +15,7 @@ var selftalkingSchema = new Schema({
     // 创建时间
     createTime: {
         type: Number,
-        default: Date.now()
+        default: Date.now
     }
 })
 module.exports = db.model('selftalking', selftalkingSchema);

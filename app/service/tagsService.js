@@ -15,7 +15,8 @@ const tags = {
             tagCode,
             description,
             ispublic,
-            creator
+            creator,
+            createTime:Date.now()
         })
         return instance.save()
     },

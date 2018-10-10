@@ -33,7 +33,6 @@ var reviewSchema =new Schema({
     // 评论时间
     createTime:{
         type:Number,
-        default:Date.now()
     }, 
 
 })

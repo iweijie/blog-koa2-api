@@ -11,7 +11,8 @@ var sessionSchema =new Schema({
     },
     expires:{
         type:Number,
-        default:(Date.now() + 3*24*60*1000)
+        required:true,
+        // default:(Date.now() + 3*24*60*1000)
     },
     info:{
         type: String,

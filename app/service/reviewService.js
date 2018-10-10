@@ -32,6 +32,7 @@ const review = {
             userId,
             replyName,
             replyUserId,
+            createTime:Date.now()
         })
         return reviewInstance.save()
     },

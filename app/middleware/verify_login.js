@@ -6,6 +6,7 @@ const {getSessionInfo} = require("../utils/basics")
 // 获取用户信息
 module.exports = async function (ctx, next) {
 	var token = ctx.cookies.get("token");
+	console.log("token",token)
 	ctx.__wj = {
 		userInfo:{
 			isLogin : false 
@@ -15,6 +16,7 @@ module.exports = async function (ctx, next) {
 
 		var result = await sessionService.getSession(token);
 		
+		console.log("result",result)
 		if(result){
 			if(getSessionInfo() !== result.info){
 				ctx.cookies.set(
@@ -29,6 +31,8 @@ module.exports = async function (ctx, next) {
 				);
 			}else {
 				var userInfo = await userService.getUserInfoById(result.userId);
+				
+				console.log("verify_login_userInfo",userInfo)
 				ctx.__wj.userInfo = {
 					...userInfo,
 					userId:userInfo._id.toString(),

@@ -1,5 +1,4 @@
 const Koa = require('koa')
-const Router = require('koa-router');
 const koabody = require("koa-body")
 const cors = require('koa2-cors');
 const config = require("./config/index")
@@ -17,11 +16,11 @@ app.use(cors({
 	origin: function (ctx) {
 		if (config.isProduction) {
 			if (/^https:\/\/blogapi\.iweijie\.cn.*$/.test(ctx.href)) {
-				return "https://www.iweijie.cn"
+				return ctx.headers.origin;
 			}
 			return false;
 		} else {
-			return ctx.origin;
+			return ctx.headers.origin;
 		}
 	},
 	// exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],

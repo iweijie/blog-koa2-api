@@ -7,7 +7,7 @@ module.exports = {
     // First application
     {
       name      : 'blogApi',
-      script    : './app',
+      script    : './index',
       watch     :  true ,
       ignore_watch : ["node_modules"],
       max_memory_restart : "200M" ,

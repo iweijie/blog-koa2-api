@@ -82,7 +82,17 @@ let diff = (newValue, oldValue) => {
     remove
   }
 }
+
+// 字符串特殊符号转字符实体
+function stringToEntity(str) {
+  let reg = /<|>|"|'|;|=|%|\||\//g
+  return str.replace(reg,function(match){
+      return '&#' + match.charCodeAt()+ ';'
+      // return '&#x' + match.charCodeAt().toString(16) + ';'
+  })
+}
 module.exports = {
+  stringToEntity,
   formatTime,
   getClientIp,
   errmark,

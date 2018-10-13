@@ -1,7 +1,7 @@
 const articleService = require('../service/articleService');
 const tagsService = require('../service/tagsService');
 const reviewService = require('../service/reviewService');
-const { diff } = require("../utils/basics")
+const { stringToEntity } = require("../utils/basics")
 
 module.exports = (router) => {
     // router.get('/article/update', async function (ctx, next) {
@@ -58,7 +58,7 @@ module.exports = (router) => {
         var { userId, name, leave, articleId, replyName, replyUserId } = ctx.request.body;
         if (!articleId) return ctx.body = { msg: "当前文章不存在", state: 0 };
         if (!name) return ctx.body = { msg: "评论人名称不能为空", state: 0 };
-
+        leave = stringToEntity(leave)
         let result = await reviewService.addReview(articleId, name, leave, userId, replyName, replyUserId);
 
         if (result) {

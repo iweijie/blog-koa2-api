@@ -16,8 +16,8 @@ app.use(error)
 app.use(cors({
 	origin: function (ctx) {
 		if (config.isProduction) {
-			if (/^https:\/\/www\.iweijie\.cn.*$/.test(ctx.origin)) {
-				return "https://www.iweijie.cn"
+			if (/^https:\/\/blogapi\.iweijie\.cn.*$/.test(ctx.origin)) {
+				return "https://blogapi.iweijie.cn"
 			}
 			return false;
 		} else {

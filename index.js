@@ -16,7 +16,8 @@ app.use(cors({
 	origin: function (ctx) {
 		if (config.isProduction) {
 			console.log("ctx.href",ctx.href)
-			if (/^https:\/\/blogapi\.iweijie\.cn.*$/.test(ctx.href)) {
+			console.log("ctx.origin",ctx.headers.origin)
+			if (/^http:\/\/blogapi\.iweijie\.cn.*$/.test(ctx.href)) {
 				return ctx.headers.origin;
 			}
 			return false;

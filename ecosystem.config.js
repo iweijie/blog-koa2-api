@@ -25,7 +25,7 @@ module.exports = {
    */
   deploy : {
     production : {
-      user : 'weijie',
+      user : 'root',
       host : '47.104.199.117',
       port:"2200",
       ssh_options: "StrictHostKeyChecking=no",

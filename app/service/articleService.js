@@ -56,34 +56,38 @@ const article = {
     * 修改文章详情
     */
     setArticlDetail: (params) => {
-        let { id, tags, title, description, ispublic, content } = params;
-        if (!id || !tags || !title || !description || ispublic === undefined || !content) {
-            myError("修改文章错误")
-        }
-        var nowtime = Date.now()
-        return articleModel.findOneAndUpdate({ _id: id }, { $set: { title, tags, description, ispublic, content, updateTime: nowtime } }).exec();
+        return new Promise((resolve, reject) => {
+            let { id, tags, title, description, ispublic, content } = params;
+            if (!id || !tags || !title || !description || ispublic === undefined || !content) {
+                return reject(myError("修改文章错误"))
+            }
+            var nowtime = Date.now()
+            resolve( articleModel.findOneAndUpdate({ _id: id }, { $set: { title, tags, description, ispublic, content, updateTime: nowtime } }).exec());
+        })
     },
     /*
     * 新增文章详情
     */
     addArticlDetail: (params) => {
-        let { title, tags, description, ispublic, content, autor } = params;
-        if (!title || !tags || !description || ispublic === undefined || !content || !autor) {
-            myError("新增文章错误")
-        }
-        var nowtime = Date.now()
-        var articleInstance = new articleModel({
-            title,
-            tags,
-            description,
-            time: 0,
-            ispublic,
-            content,
-            autor,
-            createTime: nowtime,
-            updateTime: nowtime,
+        return new Promise((resolve, reject) => {
+            let { title, tags, description, ispublic, content, autor } = params;
+            if (!title || !tags || !description || ispublic === undefined || !content || !autor) {
+                return reject(myError("新增文章错误"))
+            }
+            var nowtime = Date.now()
+            var articleInstance = new articleModel({
+                title,
+                tags,
+                description,
+                time: 0,
+                ispublic,
+                content,
+                autor,
+                createTime: nowtime,
+                updateTime: nowtime,
+            })
+            resolve(articleInstance.save())
         })
-        return articleInstance.save()
     },
     /*
     * 依据文章ID获取文章详情
@@ -92,33 +96,35 @@ const article = {
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
     getArticleDetail: async (_id, userId, field = "title description tags time ispublic content createTime updateTime autor") => {
-        if (!_id) {
-            myError("ID 为必传字段")
-        }
-        let article = articleModel.findById(
-            _id,
-            field
-        )
-            .populate({
-                path: "autor",
-                select: "name"
-            })
-            .lean()
-            .exec()
-        let review = reviewService.getReview(_id)
+        return new Promise(async (resolve, reject) => {
+            if (!_id) {
+                reject(myError("ID 为必传字段"))
+            }
+            let article = articleModel.findById(
+                _id,
+                field
+            )
+                .populate({
+                    path: "autor",
+                    select: "name"
+                })
+                .lean()
+                .exec()
+            let review = reviewService.getReview(_id)
 
-        let result = await Promise.all([article, review])
-            .then(result => {
-                if (!result[0]) {
-                    myError("文章不存在", 2)
-                }
-                let articleDetail = result[0]
-                articleDetail.review = result[1] || []
-                return articleDetail
-            })
+            let result = await Promise.all([article, review])
+                .then(result => {
+                    if (!result[0]) {
+                        return reject(myError("文章不存在", 2))
+                    }
+                    let articleDetail = result[0]
+                    articleDetail.review = result[1] || []
+                    return articleDetail
+                })
 
-        if (result && (result.ispublic === 0 || (userId && result.ispublic === 1) || (userId && userId === result.autor._id.toString()))) return result;
-        myError("文章不存在", 2)
+            if (result && (result.ispublic === 0 || (userId && result.ispublic === 1) || (userId && userId === result.autor._id.toString()))) return resolve(result);
+            reject(myError("文章不存在", 2))
+        })
     },
     /*
     * 获取标签下的文章数量
@@ -127,72 +133,75 @@ const article = {
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
     getTagsArticleCount: async (userId) => {
-        let tags = await tagsService.getTagsInfoList();
-        let tagKey = [], query,selectTags =[];
-        tags.forEach(v => {
-            if (v.ispublic === 0 ||
-                (v.ispublic === 1 && userId) ||
-                (v.ispublic === 2 && userId === v.creator.toString())
-            ) {
-                tagKey.push(v.tagCode)
-                selectTags.push(v)
-            }
-        })
-        if (userId) {
-            query = {
-                "$or": [
-                    { tags: { "$in": tagKey }, ispublic: 0 },
-                    { tags: { "$in": tagKey }, ispublic: 1 },
-                    { tags: { "$in": tagKey }, ispublic: 2, autor: mongoose.Types.ObjectId(userId) }
-                ]
-            }
-        } else {
-            query = { tags: { "$in": tagKey }, ispublic: 0 }
-        }
-        let result = await articleModel.aggregate([
-            {
-                $match: query
-            },
-            {
-                $unwind: "$tags"
-            },
-            {
-                $group: {
-                    _id: "$tags",
-                    count: { $sum: 1 }
+        return Promise.reslove()
+            .then(async () => {
+                let tags = await tagsService.getTagsInfoList();
+                let tagKey = [], query, selectTags = [];
+                tags.forEach(v => {
+                    if (v.ispublic === 0 ||
+                        (v.ispublic === 1 && userId) ||
+                        (v.ispublic === 2 && userId === v.creator.toString())
+                    ) {
+                        tagKey.push(v.tagCode)
+                        selectTags.push(v)
+                    }
+                })
+                if (userId) {
+                    query = {
+                        "$or": [
+                            { tags: { "$in": tagKey }, ispublic: 0 },
+                            { tags: { "$in": tagKey }, ispublic: 1 },
+                            { tags: { "$in": tagKey }, ispublic: 2, autor: mongoose.Types.ObjectId(userId) }
+                        ]
+                    }
+                } else {
+                    query = { tags: { "$in": tagKey }, ispublic: 0 }
                 }
-            }
-        ])
-        let returnArr = [] ;
-        if(result && result.length && selectTags && selectTags.length){
-            for(let i=0;i<result.length;i++){
-                for(let l=0;l<tags.length;l++){
-                    if( result[i]._id === selectTags[l].tagCode){
-                        returnArr.push({
-                            tagCode:selectTags[l].tagCode,
-                            tagName:selectTags[l].tagName,
-                            count:result[i].count
-                        })
+                let result = await articleModel.aggregate([
+                    {
+                        $match: query
+                    },
+                    {
+                        $unwind: "$tags"
+                    },
+                    {
+                        $group: {
+                            _id: "$tags",
+                            count: { $sum: 1 }
+                        }
+                    }
+                ])
+                let returnArr = [];
+                if (result && result.length && selectTags && selectTags.length) {
+                    for (let i = 0; i < result.length; i++) {
+                        for (let l = 0; l < tags.length; l++) {
+                            if (result[i]._id === selectTags[l].tagCode) {
+                                returnArr.push({
+                                    tagCode: selectTags[l].tagCode,
+                                    tagName: selectTags[l].tagName,
+                                    count: result[i].count
+                                })
+                            }
+                        }
                     }
                 }
-            }
-        }
-        return returnArr
-        
+                return returnArr
+            })
+
     },
-    
+
     /*
     * 推荐文章列表
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
-    getRecommendList : ()=>{
+    getRecommendList: () => {
         return articleModel.find(
             { ispublic: 0 },
             "title",
             { skip: 0, limit: 10 }
         )
-        .sort({ "time": -1 })
-    }
+            .sort({ "time": -1 })
+    },
     /*
     * 一次性更新脚本；用于格式化数据
     */
@@ -204,6 +213,15 @@ const article = {
     //         await result[i].save()
     //     }
     // }
+
+    /*
+    * 测试
+    */
+    test: () => {
+        return new Promise((resolve, reject) => {
+            reject("我是谁")
+        })
+    }
 }
 
 

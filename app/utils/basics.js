@@ -53,13 +53,19 @@ let errmark = (() => {
 })();
 
 // 自定义错误 
-
-let myError = (message, state) => {
-  var err = new Error(message)
-  err.__marsk = errmark;
-  err.state = state || 0
-  throw err
+let myError = (message = "", state = 0) => {
+  return {
+    message,
+    state,
+    __marsk : errmark
+  }
 }
+// let myError = (message, state) => {
+//   var err = new Error(message)
+//   err.__marsk = errmark;
+//   err.state = state || 0
+//   throw err
+// }
 
 // 差值对比
 let diff = (newValue, oldValue) => {

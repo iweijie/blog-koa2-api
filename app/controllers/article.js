@@ -83,4 +83,10 @@ module.exports = (router) => {
         let result = await articleService.getRecommendList();
         return ctx.body = { msg: "获取成功",state: 1, result: result  }
     })
+
+    // 测试
+    router.post('/test', async function (ctx, next) {
+        let result = await articleService.test();
+        return ctx.body = { msg: "获取成功",state: 1, result: result  }
+    })
 }

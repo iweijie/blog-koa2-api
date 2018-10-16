@@ -1,4 +1,4 @@
-'use strict';
+const logger
 const config = require("../../config/index")
 const {errmark} = require("../utils/basics")
 // error 处理函数
@@ -15,7 +15,6 @@ module.exports = async function (ctx, next) {
         ctx.set("Cache-Control","no-cache, max-age=0");
         ctx.status = err.status || 500 ;
         ctx.type = "application/json";
-
         if(err.__marsk == errmark){
             ctx.status = 200 ;
             ctx.body = {
@@ -25,7 +24,7 @@ module.exports = async function (ctx, next) {
         }else {
             let response = err.response || {}
             ctx.body = { 
-                state:err.code,
+                state:err.code || 0,
                 error:response.body || err.error ,
                 msg: err.message
             }

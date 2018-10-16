@@ -16,7 +16,7 @@ const tags = {
             description,
             ispublic,
             creator,
-            createTime:Date.now()
+            createTime: Date.now()
         })
         return instance.save()
     },
@@ -25,8 +25,8 @@ const tags = {
     * @param {String} tagCode       标签编码
     * @return {Promise} Promise     
     */
-    setArticle: async (id,params) => {
-        return tagsModel.findByIdAndUpdate(id,{$set:params})
+    setArticle: async (id, params) => {
+        return tagsModel.findByIdAndUpdate(id, { $set: params })
     },
     /*
     * 修改文章数量
@@ -52,20 +52,16 @@ const tags = {
     */
     getTagsInfoList: (userId) => {
         let query;
-        try {
-            if (userId) {
-                query = {
-                    "$or": [
-                        { ispublic: 0 },
-                        { ispublic: 1 },
-                        { creator: mongoose.Types.ObjectId(userId) }
-                    ]
-                }
-            } else {
-                query = { ispublic: 0 }
+        if (userId) {
+            query = {
+                "$or": [
+                    { ispublic: 0 },
+                    { ispublic: 1 },
+                    { creator: mongoose.Types.ObjectId(userId) }
+                ]
             }
-        } catch (err) {
-            console.log(err)
+        } else {
+            query = { ispublic: 0 }
         }
         return tagsModel.find(query)
             .populate({

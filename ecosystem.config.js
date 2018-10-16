@@ -25,7 +25,7 @@ module.exports = {
    */
   deploy : {
     production : {
-      user : 'node',
+      user : 'weijie',
       host : '47.104.199.117',
       ref  : 'origin/master',
       repo : 'git@github.com:weijie9520/blog-koa2-api.git',

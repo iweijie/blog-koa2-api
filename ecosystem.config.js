@@ -28,6 +28,7 @@ module.exports = {
       user : 'weijie',
       host : '47.104.199.117',
       port:"2200",
+      ssh_options: "StrictHostKeyChecking=no",
       ref  : 'origin/master',
       repo : 'git@github.com:weijie9520/blog-koa2-api.git',
       path : '/home/blog/blog-koa2-api',

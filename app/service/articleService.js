@@ -133,7 +133,7 @@ const article = {
     * @return {Promise[ArticleDetail]} 承载 ArticleDetail 的 Promise 对象
     */
     getTagsArticleCount: async (userId) => {
-        return Promise.reslove()
+        return Promise.resolve()
             .then(async () => {
                 let tags = await tagsService.getTagsInfoList();
                 let tagKey = [], query, selectTags = [];

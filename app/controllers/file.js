@@ -5,7 +5,6 @@ module.exports = (router) => {
     // 获取背景图列表
     router.get('/recommend/image/*', async function (ctx, next) {
         let result = await new Promise((resolve, reject) => {
-            console.log(`${config.fileServiceUrl}${ctx.path}`)
             request.get(`${config.fileServiceUrl}${ctx.path}`, (err, response, body) => {
                 if (err) return reject(err)
 
@@ -59,6 +58,27 @@ module.exports = (router) => {
                     }
                     resolve(body)
                 });
+        })
+        ctx.body = result
+    })
+    // 获取上传文件列表
+    router.get('/file/:type', async function (ctx, next) {
+        let {userInfo} = ctx.__wj;
+        let filePath;
+        if(userInfo.isLogin) {
+            filePath = `${config.fileServiceUrl}${ctx.url}&userId=${userInfo.userId}`
+        }else {
+            filePath = `${config.fileServiceUrl}${ctx.url}`
+        }
+        let result = await new Promise((resolve, reject) => {
+            request.get(filePath, (err, response, body) => {
+                if (err) return reject(err)
+
+                try { body = JSON.parse(body) }
+                catch (error) { return reject(error) }
+
+                resolve(body)
+            })
         })
         ctx.body = result
     })

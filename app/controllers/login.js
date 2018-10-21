@@ -35,7 +35,6 @@ module.exports = (router)=>{
     });
     router.post('/login/check',async function(ctx, next) {
         let userInfo = ctx.__wj.userInfo;
-        console.log("userInfo",ctx.__wj)
         ctx.body = {state:1,_id:userInfo._id,userName:userInfo.name}
     });
     

@@ -9,7 +9,6 @@ var db = mongoose.createConnection(config.mongoose.url, { useNewUrlParser: true 
 db.Schema = Schema;
 
 db.on('error', function callback(err) { //监听是否有异常
-    console.log("Connection error");
     console.log(err);
 });
 db.once('open', function callback() { //监听一次打开

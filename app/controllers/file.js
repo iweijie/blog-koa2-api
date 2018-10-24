@@ -29,7 +29,7 @@ module.exports = (router) => {
             formData[k] = body[k]
         }
         formData.file = [];
-        if(!Array.isArray(file)){
+        if (!Array.isArray(file)) {
             file = [file]
         }
         file.forEach(v => {
@@ -53,7 +53,7 @@ module.exports = (router) => {
                     }
                     try {
                         body = JSON.parse(body)
-                    }catch(err){
+                    } catch (err) {
                         return reject(err)
                     }
                     resolve(body)
@@ -63,17 +63,19 @@ module.exports = (router) => {
     })
     // 获取上传文件列表
     router.get('/file/:type', async function (ctx, next) {
-        let {userInfo} = ctx.__wj;
+        let { userInfo } = ctx.__wj;
         let filePath;
-        if(userInfo.isLogin) {
-            filePath = `${config.fileServiceUrl}${ctx.url}&userId=${userInfo.userId}`
-        }else {
+        if (userInfo.isLogin) {
+            filePath = /\?/.test(ctx.url) ?
+                `${config.fileServiceUrl}${ctx.url}&userId=${userInfo.userId}`
+                :
+                `${config.fileServiceUrl}${ctx.url}?userId=${userInfo.userId}`
+        } else {
             filePath = `${config.fileServiceUrl}${ctx.url}`
         }
         let result = await new Promise((resolve, reject) => {
             request.get(filePath, (err, response, body) => {
                 if (err) return reject(err)
-
                 try { body = JSON.parse(body) }
                 catch (error) { return reject(error) }
 

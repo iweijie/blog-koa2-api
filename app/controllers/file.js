@@ -62,8 +62,10 @@ module.exports = (router) => {
         ctx.body = result
     })
     // 获取上传文件列表
-    router.get('/file/:type', async function (ctx, next) {
+    router.get('/file/list', async function (ctx, next) {
         let { userInfo } = ctx.__wj;
+        let { page, pageSize, type } = ctx.query;
+        if(!type || !page || !pageSize) return ctx.body = {state:0,msg:"参数错误"} 
         let filePath;
         if (userInfo.isLogin) {
             filePath = /\?/.test(ctx.url) ?

@@ -40,33 +40,6 @@ var getClientIp = function (req) {
   return ip;
 };
 
-let getSessionInfo = function () {
-  let arch = os.arch()
-  let hostname = os.hostname();
-  return JSON.stringify({ arch, hostname })
-}
-
-let errmark = (() => {
-  let mark = "__wj_error"
-  if (Symbol) return Symbol(mark)
-  return mark;
-})();
-
-// 自定义错误 
-let myError = (message = "", state = 0) => {
-  return {
-    message,
-    state,
-    __marsk : errmark
-  }
-}
-// let myError = (message, state) => {
-//   var err = new Error(message)
-//   err.__marsk = errmark;
-//   err.state = state || 0
-//   throw err
-// }
-
 // 差值对比
 let diff = (newValue, oldValue) => {
   newValue = newValue && newValue.length ? newValue : []
@@ -101,8 +74,5 @@ module.exports = {
   stringToEntity,
   formatTime,
   getClientIp,
-  errmark,
-  myError,
-  getSessionInfo,
   diff
 }

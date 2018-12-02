@@ -16,7 +16,7 @@ var sessionSchema =new Schema({
     },
     info:{
         type: String,
-        required:true
+        // required:true
     },
 })
 module.exports  = db.model('session',sessionSchema);

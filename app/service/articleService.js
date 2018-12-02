@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const articleModel = require("../models/article")
 const reviewService = require("./reviewService")
 const tagsService = require("./tagsService")
-const { myError } = require("../utils/basics")
 
 const article = {
     /*
@@ -59,10 +58,14 @@ const article = {
         return new Promise((resolve, reject) => {
             let { id, tags, title, description, ispublic, content } = params;
             if (!id || !tags || !title || !description || ispublic === undefined || !content) {
-                return reject(myError("修改文章错误"))
+                return reject({
+                    msg: "修改文章错误",
+                    state: 2,
+                    __wj: true
+                })
             }
             var nowtime = Date.now()
-            resolve( articleModel.findOneAndUpdate({ _id: id }, { $set: { title, tags, description, ispublic, content, updateTime: nowtime } }).exec());
+            resolve(articleModel.findOneAndUpdate({ _id: id }, { $set: { title, tags, description, ispublic, content, updateTime: nowtime } }).exec());
         })
     },
     /*
@@ -72,7 +75,11 @@ const article = {
         return new Promise((resolve, reject) => {
             let { title, tags, description, ispublic, content, autor } = params;
             if (!title || !tags || !description || ispublic === undefined || !content || !autor) {
-                return reject(myError("新增文章错误"))
+                return reject({
+                    msg: "新增文章错误",
+                    state: 2,
+                    __wj: true
+                })
             }
             var nowtime = Date.now()
             var articleInstance = new articleModel({
@@ -98,32 +105,51 @@ const article = {
     getArticleDetail: async (_id, userId, field = "title description tags time ispublic content createTime updateTime autor") => {
         return new Promise(async (resolve, reject) => {
             if (!_id) {
-                reject(myError("ID 为必传字段"))
-            }
-            let article = articleModel.findById(
-                _id,
-                field
-            )
-                .populate({
-                    path: "autor",
-                    select: "name"
+                return reject({
+                    msg: "ID 为必传字段",
+                    state: 0,
+                    __wj: true
                 })
-                .lean()
-                .exec()
-            let review = reviewService.getReview(_id)
-
-            let result = await Promise.all([article, review])
+            }
+            await Promise.all([
+                articleModel.findById(
+                    _id,
+                    field
+                )
+                    .populate({
+                        path: "autor",
+                        select: "name"
+                    })
+                    .lean()
+                    .exec(),
+                reviewService.getReview(_id)
+            ])
                 .then(result => {
-                    if (!result[0]) {
-                        return reject(myError("文章不存在", 2))
+                    if (!result || !result[0]) {
+                        return reject({
+                            msg: "文章不存在",
+                            state: 0,
+                            __wj: true
+                        })
                     }
                     let articleDetail = result[0]
                     articleDetail.review = result[1] || []
                     return articleDetail
                 })
-
-            if (result && (result.ispublic === 0 || (userId && result.ispublic === 1) || (userId && userId === result.autor._id.toString()))) return resolve(result);
-            reject(myError("文章不存在", 2))
+                .then(result => {
+                    if (result &&
+                        (result.ispublic === 0 ||
+                            (userId && result.ispublic === 1) ||
+                            (userId && userId === result.autor._id.toString())
+                        )
+                    ) return resolve(result);
+                    
+                    reject({
+                        msg: "文章不存在",
+                        state: 0,
+                        __wj: true
+                    })
+                })
         })
     },
     /*
@@ -135,7 +161,7 @@ const article = {
     getTagsArticleCount: async (userId) => {
         return Promise.resolve()
             .then(async () => {
-                let tags = await tagsService.getTagsInfoList();
+                let tags = await tagsService.getTagsInfoList(userId);
                 let tagKey = [], query, selectTags = [];
                 tags.forEach(v => {
                     if (v.ispublic === 0 ||
@@ -213,15 +239,6 @@ const article = {
     //         await result[i].save()
     //     }
     // }
-
-    /*
-    * 测试
-    */
-    test: () => {
-        return new Promise((resolve, reject) => {
-            reject("我是谁")
-        })
-    }
 }
 
 

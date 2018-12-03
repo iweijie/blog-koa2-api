@@ -27,7 +27,7 @@ app.use(accesslog)
 app.use(cors({
 	origin: function (ctx) {
 		if (config.isProduction) {
-			if (/^http:\/\/blogapi\.iweijie\.cn.*$/.test(ctx.href)) {
+			if (/^https?:\/\/blogapi\.iweijie\.cn.*$/.test(ctx.href)) {
 				return ctx.headers.origin;
 			}
 			return false;

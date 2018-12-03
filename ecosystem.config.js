@@ -11,7 +11,7 @@ module.exports = {
       name: 'blogApi',
       script: './index.js',
       watch: true,
-      ignore_watch: ["node_modules"],
+      ignore_watch: ["node_modules","logs"],
       max_memory_restart: "200M",
       env: {
         COMMON_VARIABLE: 'true'

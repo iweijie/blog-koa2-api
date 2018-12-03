@@ -68,6 +68,3 @@ config/
 *.test.js
 
 test/
-
-# 配置文件
-ecosystem.config.js

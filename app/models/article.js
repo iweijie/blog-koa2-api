@@ -9,7 +9,7 @@ var articleSchema = new Schema({
     description: {  //描述
         type: String,
     },
-    // classify: {  //分类
+    // category: {  //分类
     //     type: String,
     //     required: true
     // },

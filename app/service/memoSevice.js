@@ -6,9 +6,9 @@ const memo = {
     */
     addMemo: (params) => {
         return new Promise((resolve) => {
-            let { title, category, tag, type, value, creator, time } = params;
+            let { category, tag, type, value, creator, time } = params;
             var instance = new memoModel({
-                title, category, tag, type, value, creator, time
+                category, tag, type, value, creator, time
             })
             resolve(instance.save())
         })
@@ -65,7 +65,7 @@ const memo = {
         }
         return memoModel.find(
             query,
-            "title tag value time",
+            "category tag value time",
         )
     },
     getMemoDetail: (_id) => {

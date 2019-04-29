@@ -25,10 +25,6 @@ var memoCategorySchema = new Schema({
 })
 
 var memoSchema = new Schema({
-    title: {  //文章标题
-        type: String,
-        required: true
-    },
     category: {
         type: Schema.Types.ObjectId,
         required: true,

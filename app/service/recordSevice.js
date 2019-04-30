@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
-const { memoCategoryModel, memoModel } = require("../models/memo")
-const memo = {
+const { recordCategoryModel, recordModel } = require("../models/record")
+const record = {
     /*
     * 新增
     */
-    addMemo: (params) => {
+    addRecord: (params) => {
         return new Promise((resolve) => {
             let { category, tag, type, value, creator, time } = params;
-            var instance = new memoModel({
+            var instance = new recordModel({
                 category, tag, type, value, creator, time
             })
             resolve(instance.save())
         })
     },
-    addMemoCategory: (params) => {
+    addRecordCategory: (params) => {
         return new Promise((resolve, reject) => {
             let { name, type, hasTag, tags, unit, creator } = params;
             if (hasTag && (!tags || !tags.length)) {
@@ -23,7 +23,7 @@ const memo = {
                     __wj: true
                 })
             }
-            var instance = new memoCategoryModel({
+            var instance = new recordCategoryModel({
                 name, type, hasTag, tags, unit, creator
             })
             resolve(instance.save())
@@ -32,55 +32,65 @@ const memo = {
     /*
     * 删
     */
-    delMemo: (_id) => {
-        return memoModel.remove({ _id })
+    delRecord: (_id) => {
+        return recordModel.remove({ _id })
     },
-    delMemoCategory: (_id) => {
-        return memoCategoryModel.remove({ _id })
+    delRecordCategory: (_id) => {
+        return recordCategoryModel.remove({ _id })
     },
     /*
     * 改
     */
-    // updateMemo: (_id) => {
-    //     return memoModel.remove({ _id })
+    // updateRecord: (_id) => {
+    //     return recordModel.remove({ _id })
     // },
-    // updateMemoCategory: (_id) => {
-    //     return memoCategoryModel.remove({ _id })
+    // updateRecordCategory: (_id) => {
+    //     return recordCategoryModel.remove({ _id })
     // }
 
     /*
     * 查
     */
-    getMemoList: ({ creator, category, tag, time }) => {
+    getRecordList: ({ creator, category, tag, time }) => {
 
-        let query = { category: mongoose.Types.ObjectId(category), creator: mongoose.Types.ObjectId(userId) }
-        if (tag) {
-            query.tags = { "$in": [tag] }
+        let query = { creator: mongoose.Types.ObjectId(creator) }
+        if (category) {
+            query.category = mongoose.Types.ObjectId(category)
+            if (tag) {
+                query.tag = tag
+            }
         }
         if (Array.isArray(time) && time.length >= 2) {
 
             // 　　$gte　　　 大于等于
             // 　　$lte　　　  小于等于
-            query.time = { time: { $gte: time[0], $lte: time[1] } }
+            query.time = { $gte: time[0], $lte: time[1] }
         }
-        return memoModel.find(
+        return recordModel.find(
             query,
             "category tag value time",
         )
+            .populate({
+                path: "category",
+                select: "name unit"
+            })
+            .lean()
     },
-    getMemoDetail: (_id) => {
-        return memoModel.findById(_id)
+    getRecordDetail: (_id) => {
+        return recordModel.findById(_id)
     },
-    getMemoCategoryList: (creator) => {
+    getRecordCategoryList: (creator) => {
         let query = {
             "$or": [
                 { type: 1 },
                 { creator: mongoose.Types.ObjectId(creator) }
             ]
         }
-        return memoModel.find(
+        return recordCategoryModel.find(
             query,
-            "name type tags hasTag unit",
+            "name type tags hasTag unit graph",
         )
     }
 }
+
+module.exports = record

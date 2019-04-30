@@ -1,7 +1,7 @@
 var db = require("./mongoose")
 var Schema = db.Schema
 
-var memoCategorySchema = new Schema({
+var recordCategorySchema = new Schema({
     //分类名称
     name: {
         type: String,
@@ -11,6 +11,11 @@ var memoCategorySchema = new Schema({
     type: {
         type: Number,
         required: true
+    },
+    // 1 : 条形图 ； 2 饼状图 ； 3 散点图
+    graph: {
+        type: Number,
+        default: 1
     },
     // 是否有标签
     hasTag: {
@@ -24,32 +29,23 @@ var memoCategorySchema = new Schema({
     creator: { type: Schema.Types.ObjectId, required: true, ref: 'user' },//用户
 })
 
-var memoSchema = new Schema({
+var recordSchema = new Schema({
     category: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'memoCategory'
+        ref: 'recordCategory'
     },
-    // category: {
-    //     type: String,
-    //     required: true
-    // },
     // 标签
     tag: String,
-    // 1 : 条形图 ； 2 饼状图
-    type: {
-        type: Number,
-        required: true
-    },
     // 时间  案例 ： 20190616
     time: {
-        type: String,
+        type: Number,
         required: true
     },
     value: Schema.Types.Mixed,
     creator: { type: Schema.Types.ObjectId, required: true, ref: 'user' },//用户
 })
 module.exports = {
-    memoCategoryModel: db.model('memoCategory', memoCategorySchema),
-    memoModel: db.model('memo', memoSchema),
+    recordCategoryModel: db.model('recordCategory', recordCategorySchema),
+    recordModel: db.model('record', recordSchema),
 }

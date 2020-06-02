@@ -58,9 +58,9 @@ app.use(async (ctx) => {
 app.listen(config.port)
 
 process.on('unhandledRejection', (err) => {
-	log.error(`pid: ${ctx.cookies.get('pid')}, message: ${err.message}, stack: ${err.stack}`)
+	log.error(`message: ${err.message}, stack: ${err.stack}`)
 });
 
 process.on('uncaughtException', (err) => {
-	log.error(`pid: ${ctx.cookies.get('pid')}, message: ${err.message}, stack: ${err.stack}`)
+	log.error(`message: ${err.message}, stack: ${err.stack}`)
 });

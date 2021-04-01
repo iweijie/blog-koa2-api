@@ -27,9 +27,9 @@ module.exports = {
    */
   deploy: {
     production: {
-      user: "weijie",
-      host: "47.104.199.117",
-      port: "2200",
+      user: "root",
+      host: "1.116.9.161",
+      port: "22",
       ssh_options: "StrictHostKeyChecking=no",
       ref: 'origin/master',
       repo: 'git@github.com:weijie9520/blog-koa2-api.git',

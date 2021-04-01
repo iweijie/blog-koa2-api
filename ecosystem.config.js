@@ -34,7 +34,10 @@ module.exports = {
       ref: 'origin/master',
       repo: 'git@github.com:weijie9520/blog-koa2-api.git',
       path: '/weijie/blog-koa2-api',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --NODE_ENV=production'
+      'post-deploy': 'npm install && pm2 startOrRestart ecosystem.config.js --env production',
+      env : {
+        NODE_ENV: "production"
+      }
     },
   }
 };

@@ -49,7 +49,7 @@ module.exports = (router) => {
         a.sort((b, c) => {
             return Math.random() - 0.5;
         });
-        ctx.body = a;
+        ctx.body = { result: a, state: 1 };
     });
 
     // 文件转存

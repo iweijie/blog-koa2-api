@@ -5,6 +5,7 @@ const userService = require("../service/userService")
 // 获取用户信息
 module.exports = async function (ctx, next) {
 	var token = ctx.cookies.get("token");
+	console.log("token:", token)
 	ctx.__wj = {
 		userInfo: {
 			isLogin: false
